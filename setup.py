@@ -1,5 +1,5 @@
 from setuptools import setup
-
+print('A')
 setup(
     name='uppercut',
     version='0.0.1',
