@@ -1,2 +1,1 @@
-# docker run --rm -it $(docker build -f ./publish.docker -q .)
-docker build -f ./publish.docker . 
+python3 -m twine upload dist/*
