@@ -5,7 +5,7 @@ setup(
     url='https://github.com/StephanAm/uppercut.python.tools',
     author='Stephan Marais',
     maintainer='Stephan Marais',
-    version='0.0.8',
+    version='0.0.9',
     description='A library to handle common tasks for creating an Uppercut module in python.',
     py_modules=['test'],
     package_dir={'':'src'},
@@ -13,4 +13,7 @@ setup(
     classifiers=[
         "Programming Language :: Python :: 3.7"
     ],
+    install_requires = [
+        'redis'
+    ]
 )
