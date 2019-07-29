@@ -1,1 +1,1 @@
-from test import sayHi
+from hwtest import sayHi
