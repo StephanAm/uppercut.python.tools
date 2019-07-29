@@ -1,1 +1,0 @@
-from hwtest import sayHi
