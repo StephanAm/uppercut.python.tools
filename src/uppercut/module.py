@@ -6,7 +6,7 @@ import uppercut.environment as environment
 import signal
 import time
 from uppercut.sharedvars import SharedVarStore, SystemVarStore
-redishost = environment.getVar(constants.EnvVars.MOD_REG_SERVER,"localhost")
+redishost = environment.getVar(constants.EnvVars.SHARED_VAR_HOST,"localhost")
     
 class Module(object):
     def terminate(self,signum,frame):

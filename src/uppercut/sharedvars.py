@@ -13,7 +13,7 @@ _redisInstance = None
 def GetRedisInstance(redisHost=None):
     global _redisInstance
     if _redisInstance is None:
-        redisHost = redisHost or environment.getVar(constants.EnvVars.SHARED_VAR_SERVER,'localhost')
+        redisHost = redisHost or environment.getVar(constants.EnvVars.SHARED_VAR_HOST,'localhost')
         _redisInstance = Redis(host=redisHost)
     return _redisInstance
 
