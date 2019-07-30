@@ -1,32 +1,33 @@
 from redis import Redis
 import json
+import uppercut.constants as constants
+import uppercut.environment as environment
 
-class SharedVarAccessor(object)
-    def __init__(self,sharedvars,varName,defaultValue=None):
-        self._sharedvars = sharedvars
-        self._varname = varName
-        self._defaultValue = defaultValue
-    @property
-    def Value(self):
-        return self._sharedvars.get(self.varName,self._defaultValue)
+def encode(val):
+    return json.dumps(val)
 
-    @Value
-    def Value(self,val):
-        self._sharedvars.set(self.varName,self.value)
+def decode(val):
+    return json.loads(val.decode('utf-8'))
+
+_redisInstance = None
+def GetRedisInstance(redisHost=None):
+    global _redisInstance
+    if _redisInstance is None:
+        redisHost = redisHost or environment.getVar(constants.EnvVars.SHARED_VAR_SERVER,'localhost')
+        _redisInstance = Redis(host=redisHost)
+    return _redisInstance
 
 class SharedVarStore(Redis):
     """This class abstracts the reading and setting of shared variables between modules.
     This specific implementation uses Redis"""
-    def __init__(self,moduleName,*args,**kwargs):
-        self._client = Redis(*args,**kwargs)
+    def __init__(self,moduleName,redisHost=None):
+        
+        self._client = GetRedisInstance(redisHost)
         self._modName = moduleName
 
     def getKey(self,varName):
         """generate the key name used to store the var in Redis"""
         return '{}/{}'.format(self._modName,varName)
-
-    def getAccessor(self,varName):
-
 
     def get(self,varName,defaultValue=None):
         """ Get the value of a shared variable.
@@ -36,9 +37,7 @@ class SharedVarStore(Redis):
         """
         v = self._client.get(self.getKey(varName))
         if v is None: return defaultValue
-        v = v.decode('utf-8')
-        v = json.loads(v)
-        return v
+        return decode(v)
 
     def set(self,varName,value):
         """ Set the value of a shared variable.
@@ -46,6 +45,13 @@ class SharedVarStore(Redis):
         @param: varName The name of the variable to set.
         @param: value The new value of the variable.
         """
-        self._client.set(self.getKey(varName),json.dumps(value))
+        self._client.set(self.getKey(varName),encode(value))
 
+    def push(self,listName,value):
+        k = self.getKey(listName)
+        v = encode(value)
+        self._client.lpush(k,v)
+        self._client.lpush
     
+def SystemVarStore():
+    return SharedVarStore(constants.Keys.UPPERCUT_SYS)
