@@ -1,5 +1,16 @@
 from setuptools import setup,find_packages
-print('A')
+from sys import argv
+import json
+
+with open('.version','r') as f:info = json.load(f)
+
+if True or 'step' in argv:
+    print('stepping version')
+    info['version'][-1] = info['version'][-1]+1
+    with open('.version','w') as f:json.dump(info,f)
+
+print(info)
+
 setup(
     name='uppercut',
     url='https://github.com/StephanAm/uppercut.python.tools',

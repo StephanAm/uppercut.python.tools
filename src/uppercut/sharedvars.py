@@ -1,7 +1,20 @@
 from redis import Redis
 import json
 
-class SharedVars(Redis):
+class SharedVarAccessor(object)
+    def __init__(self,sharedvars,varName,defaultValue=None):
+        self._sharedvars = sharedvars
+        self._varname = varName
+        self._defaultValue = defaultValue
+    @property
+    def Value(self):
+        return self._sharedvars.get(self.varName,self._defaultValue)
+
+    @Value
+    def Value(self,val):
+        self._sharedvars.set(self.varName,self.value)
+
+class SharedVarStore(Redis):
     """This class abstracts the reading and setting of shared variables between modules.
     This specific implementation uses Redis"""
     def __init__(self,moduleName,*args,**kwargs):
@@ -12,8 +25,12 @@ class SharedVars(Redis):
         """generate the key name used to store the var in Redis"""
         return '{}/{}'.format(self._modName,varName)
 
+    def getAccessor(self,varName):
+
+
     def get(self,varName,defaultValue=None):
         """ Get the value of a shared variable.
+
         @param: varName The name of the variable that you need to access.
         @param: defaultValue The default value to return if the variable doesn't exist yet.
         """

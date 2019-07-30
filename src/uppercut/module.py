@@ -3,15 +3,31 @@ from redis import Redis
 import constants
 import json
 
-def Register(name,description):
-    """ registers register the module's particulars on the in mem repo """
-    _redis = Redis(host=constants.EnvVars.MOD_REG_SERVER)
-    modInfo = {'name':name, 'description':description}
-    _redis.lpush(constants.Keys.MOD_LIST,json.dumps(modInfo))
+import signal
+import time
 
 
-def GetModules():
-    _redis = Redis(host=constants.MOD_REG_SERVER)
-    modList = _redis.lrange(constants.Keys.MOD_LIST,0,-1)
-    modList = json.loads(modList)
-    return modList
+class Module(object):
+    def terminate(self,signum,frame):
+        self._isUp = False
+    
+    def __init__(self,name,interval,loopCallable,vars):
+        signal.signal(signal.SIGINT,self.terminate)
+        signal.signal(signal.SIGTERM,self.terminate)
+        self._name = name
+        self._interval = interval
+        self._mainLoop = loopCallable
+        self._isUp = False
+
+    def _register(self):
+        _redis = Redis(host=constants.EnvVars.MOD_REG_SERVER)
+        modInfo = {'name':self._name}
+        _redis.lpush(constants.Keys.MOD_LIST)
+
+    def start(self):
+        self._isUp = True
+        while self._isUp:
+            self._mainLoop(self)
+            time.sleep(self._interval)
+
+
